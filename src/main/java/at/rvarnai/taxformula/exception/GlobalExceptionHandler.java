@@ -16,6 +16,7 @@ import java.net.URI;
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(NotFoundException.class)
+    @SuppressWarnings("unused")
     public ResponseEntity<ProblemDetail> handleNotFound(
             NotFoundException exception,
             HttpServletRequest request) {
@@ -23,6 +24,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler({IllegalArgumentException.class, BindException.class})
+    @SuppressWarnings("unused")
     public ResponseEntity<ProblemDetail> handleBadRequest(
             Exception exception,
             HttpServletRequest request) {
@@ -30,6 +32,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NoResourceFoundException.class)
+    @SuppressWarnings("unused")
     public ResponseEntity<ProblemDetail> handleNoResource(
             NoResourceFoundException exception,
             HttpServletRequest request) {
