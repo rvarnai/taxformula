@@ -1,6 +1,7 @@
 # Tax Formula
 
 ![CI](https://github.com/rvarnai/taxformula/actions/workflows/ci.yml/badge.svg)
+[![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=rvarnai_taxformula&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=rvarnai_taxformula)
 
 Tax Formula generates Excel formulas for calculating Austrian income tax based on the configured tax brackets for 2025, 2026 and 2027.
 
