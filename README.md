@@ -1,5 +1,7 @@
 # Tax Formula
 
+![CI](https://github.com/rvarnai/taxformula/actions/workflows/ci.yml/badge.svg)
+
 Tax Formula generates Excel formulas for calculating Austrian income tax based on the configured tax brackets for 2025, 2026 and 2027.
 
 ## Features
