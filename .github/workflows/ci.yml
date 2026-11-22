@@ -30,7 +30,7 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Build, test and analyze
+      - name: Build and test
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
