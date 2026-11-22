@@ -77,11 +77,6 @@ jobs:
             exit 1
           fi
     
-          if git ls-remote --exit-code --heads origin "$BRANCH" >/dev/null 2>&1; then
-            echo "Release branch already exists: $BRANCH"
-            exit 1
-          fi
-    
           echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
           echo "release_tag=$TAG" >> "$GITHUB_OUTPUT"
           echo "release_branch=$BRANCH" >> "$GITHUB_OUTPUT"
@@ -95,38 +90,68 @@ jobs:
       - name: Build and verify
         run: ./mvnw --batch-mode --no-transfer-progress clean verify
 
-      - name: Create release branch
+      - name: Create or reuse release branch
         env:
           RELEASE_BRANCH: ${{ steps.version.outputs.release_branch }}
           RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-    
-          git switch -c "$RELEASE_BRANCH"
-    
-          git add pom.xml
-          git commit -m "chore(release): prepare v$RELEASE_VERSION"
-    
-          git push origin "$RELEASE_BRANCH"
 
-      - name: Create release pull request
+          if git ls-remote --exit-code --heads origin "$RELEASE_BRANCH" >/dev/null 2>&1; then
+            echo "Release branch already exists. Reusing it."
+
+            git fetch origin "$RELEASE_BRANCH"
+            git switch --track "origin/$RELEASE_BRANCH"
+
+            EXISTING_VERSION=$(./mvnw help:evaluate \
+              -Dexpression=project.version \
+              -q -DforceStdout)
+
+            if [[ "$EXISTING_VERSION" != "$RELEASE_VERSION" ]]; then
+              echo "Existing branch has version $EXISTING_VERSION, expected $RELEASE_VERSION."
+              exit 1
+            fi
+
+          else
+            echo "Creating release branch."
+
+            git switch -c "$RELEASE_BRANCH"
+
+            git add pom.xml
+            git commit -m "chore(release): prepare v$RELEASE_VERSION"
+
+            git push origin "$RELEASE_BRANCH"
+          fi
+
+      - name: Create or reuse release pull request
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           RELEASE_BRANCH: ${{ steps.version.outputs.release_branch }}
           RELEASE_VERSION: ${{ steps.version.outputs.release_version }}
           NEXT_BUMP: ${{ inputs.next_version_bump }}
         run: |
-          gh pr create \
+          EXISTING_PR=$(gh pr list \
             --base main \
             --head "$RELEASE_BRANCH" \
-            --title "release: prepare v$RELEASE_VERSION" \
-            --body "## Release preparation: v$RELEASE_VERSION
-    
+            --state open \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [[ -n "$EXISTING_PR" ]]; then
+            echo "Release PR already exists: #$EXISTING_PR"
+          else
+            gh pr create \
+              --base main \
+              --head "$RELEASE_BRANCH" \
+              --title "release: prepare v$RELEASE_VERSION" \
+              --body "## Release preparation: v$RELEASE_VERSION
+
           - [x] Update Maven version
           - [x] Maven verification successful
           - [ ] Review changes
           - [ ] Merge release PR
           - [ ] Create tag v$RELEASE_VERSION
-    
-          Next development version will use a $NEXT_BUMP increment."
+
+          <!-- next-version-bump: $NEXT_BUMP -->"
+          fi
