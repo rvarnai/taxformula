@@ -1,0 +1,18 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Excel formula generator for Austrian tax rules</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h1>Select year</h1>
+<form action="#" th:action="@{/formula}" th:object="${formula}" method="post">
+    <p>Year:
+        <select th:field="*{year}">
+            <option th:each="year : ${years}" th:value="${year.value}" th:text="${year.value}"></option>
+        </select>
+    </p>
+    <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
+</form>
+</body>
+</html>

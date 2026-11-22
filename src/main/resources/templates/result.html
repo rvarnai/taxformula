@@ -1,0 +1,19 @@
+<!DOCTYPE HTML>
+<html xmlns:th="https://www.thymeleaf.org">
+<head>
+    <title>Excel formula generator for Austrian tax rules</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+</head>
+<body>
+<h1>Tax levels and Excel formula</h1>
+<span style="font-weight: bold" th:text="'Tax levels ' + ${formula.year}"></span>
+<br>
+<span style="white-space: pre-line" th:text="${formula.taxLevels}"></span>
+<br>
+<span style="font-weight: bold" th:text="'Excel formula ' + ${formula.year}"></span>
+<br>
+<span style="white-space: pre-line" th:text="${formula.excelFormula}"></span>
+<br><br>
+<a href="/formula">Select another year</a>
+</body>
+</html>
