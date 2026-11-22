@@ -2,6 +2,7 @@
 
 ![CI](https://github.com/rvarnai/taxformula/actions/workflows/ci.yml/badge.svg)
 [![Quality gate status](https://sonarcloud.io/api/project_badges/measure?project=rvarnai_taxformula&metric=alert_status)](https://sonarcloud.io/summary/new_code?id=rvarnai_taxformula)
+[![Latest Release](https://img.shields.io/github/v/release/rvarnai/taxformula)](https://github.com/rvarnai/taxformula/releases)
 
 Tax Formula generates Excel formulas for calculating Austrian income tax based on the configured tax brackets for 2025, 2026 and 2027.
 
@@ -39,6 +40,56 @@ Hosted on Render. The free hosting instance may spin down after inactivity, so t
 ```
 
 Open [http://localhost:8080/formula](http://localhost:8080/formula).
+
+## Release process
+
+Releases are managed automatically using GitHub Actions and semantic versioning.
+
+### Creating a release
+
+1. Navigate to **Actions → Release Preparation**.
+2. Select the release type:
+   - `patch` – bug fixes (1.0.0 → 1.0.1)
+   - `minor` – backward-compatible features (1.0.0 → 1.1.0)
+   - `major` – breaking changes (1.0.0 → 2.0.0)
+3. Optionally provide an explicit release version.
+4. Run the workflow.
+
+GitHub Actions automatically:
+
+- Creates a release branch.
+- Updates the Maven project version.
+- Runs Maven verification.
+- Opens a release preparation pull request.
+
+After reviewing and merging the pull request, create and push the corresponding version tag:
+
+```sh
+git tag -a v1.0.0 -m "Tax Formula v1.0.0"
+git push origin v1.0.0
+```
+
+### Automated publishing
+
+Pushing a release tag triggers the publishing workflow, which:
+
+- Builds and verifies the application.
+- Builds and publishes a Docker image to GitHub Container Registry.
+- Creates a GitHub Release with generated release notes.
+- Triggers deployment to Render.
+
+Docker images are published with version-specific and `latest` tags:
+
+```text
+ghcr.io/rvarnai/taxformula:1.0.0
+ghcr.io/rvarnai/taxformula:latest
+```
+
+### Next development version
+
+After successful publishing, GitHub Actions automatically calculates the next development version, updates the Maven project version and creates a pull request.
+
+The next development version requires review and merging before further development continues.
 
 ## Verify and package
 
