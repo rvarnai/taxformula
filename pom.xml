@@ -16,7 +16,17 @@
 
 	<properties>
 		<java.version>25</java.version>
+		<compiler.plugin.version>3.16.0</compiler.plugin.version>
+		<jacoco.plugin.version>0.8.16</jacoco.plugin.version>
+
+		<!-- SonarQube Cloud -->
+		<sonar.organization>rvarnai</sonar.organization>
+		<sonar.projectKey>rvarnai_taxformula</sonar.projectKey>
+		<sonar.coverage.jacoco.xmlReportPaths>
+			target/site/jacoco/jacoco.xml
+		</sonar.coverage.jacoco.xmlReportPaths>
 	</properties>
+
 
 	<dependencies>
 		<!-- INTERNAL -->
@@ -84,7 +94,7 @@
 			</plugin>
 			<plugin>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.16.0</version>
+				<version>${compiler.plugin.version}</version>
 				<configuration>
 					<source>${java.version}</source>
 					<target>${java.version}</target>
@@ -94,7 +104,7 @@
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
-				<version>0.8.16</version>
+				<version>${jacoco.plugin.version}</version>
 				<executions>
 					<execution>
 						<goals>
