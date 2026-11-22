@@ -11,7 +11,7 @@ permissions: {}
 
 jobs:
   build:
-    name: Build, test and analyze
+    name: Build and test
     runs-on: ubuntu-latest
 
     permissions:
@@ -30,7 +30,7 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Build and test
+      - name: Build, test and analyze
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
