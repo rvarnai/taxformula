@@ -92,9 +92,13 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh release create "$GITHUB_REF_NAME" \
-            --title "Tax Formula $GITHUB_REF_NAME" \
-            --generate-notes
+          if gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
+            echo "GitHub Release already exists. Skipping creation."
+          else
+            gh release create "$GITHUB_REF_NAME" \
+              --title "Tax Formula $GITHUB_REF_NAME" \
+              --generate-notes
+          fi
 
   deploy:
     name: Deploy to Render
