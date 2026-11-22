@@ -7,18 +7,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class FormulaFactoryServiceImpl implements FormulaFactoryService {
 
-    private static final String TAXABLE_AMOUNT = "(E34-E35)";
-    private static final String IF_TAXABLE_AMOUNT = "WENN(" + TAXABLE_AMOUNT + "<=";
+    private static final Pattern CELL_REFERENCE = Pattern.compile("[A-Z]{1,3}[1-9]{1,3}");
 
     private final ChargeService service;
 
     @Override
-    public String createFormula(Year year) {
+    public String createFormula(Year year, String profitBeforeTaxCell, String basicTaxFreeAllowanceCell) {
+        validateCellReference(profitBeforeTaxCell, "Profit before tax");
+        validateCellReference(basicTaxFreeAllowanceCell, "Basic tax-free allowance");
+        String taxableAmount = "(" + profitBeforeTaxCell + "-" + basicTaxFreeAllowanceCell + ")";
+        String ifTaxableAmount = "WENN(" + taxableAmount + "<=";
+
         Charge level1 = service.getCharge(year, Level.LEVEL1);
         Charge level2 = service.getCharge(year, Level.LEVEL2);
         Charge level3 = service.getCharge(year, Level.LEVEL3);
@@ -40,38 +45,44 @@ public class FormulaFactoryServiceImpl implements FormulaFactoryService {
         StringBuilder sb = new StringBuilder("=")
 
                 // Level 0
-                .append(IF_TAXABLE_AMOUNT).append(level1.amount()).append(";0;")
+                .append(ifTaxableAmount).append(level1.amount()).append(";0;")
 
                 // Level 1
-                .append(IF_TAXABLE_AMOUNT).append(level2.amount()).append(";((").append(TAXABLE_AMOUNT).append("-")
+                .append(ifTaxableAmount).append(level2.amount()).append(";((").append(taxableAmount).append("-")
                 .append(level1.amount()).append(")*").append(taxAmount1).append(")/")
                 .append(level2.amount().subtract(level1.amount())).append(";")
 
                 // Level 2
-                .append(IF_TAXABLE_AMOUNT).append(level3.amount()).append(";((").append(TAXABLE_AMOUNT).append("-")
+                .append(ifTaxableAmount).append(level3.amount()).append(";((").append(taxableAmount).append("-")
                 .append(level2.amount()).append(")*").append(taxAmount2).append(")/")
                 .append(level3.amount().subtract(level2.amount())).append("+").append(taxAmount1).append(";")
 
                 // Level 3
-                .append(IF_TAXABLE_AMOUNT).append(level4.amount()).append(";((").append(TAXABLE_AMOUNT).append("-")
+                .append(ifTaxableAmount).append(level4.amount()).append(";((").append(taxableAmount).append("-")
                 .append(level3.amount()).append(")*").append(taxAmount3).append(")/")
                 .append(level4.amount().subtract(level3.amount())).append("+").append(taxAmount12).append(";")
 
                 // Level 4
-                .append(IF_TAXABLE_AMOUNT).append(level5.amount()).append(";((").append(TAXABLE_AMOUNT).append("-")
+                .append(ifTaxableAmount).append(level5.amount()).append(";((").append(taxableAmount).append("-")
                 .append(level4.amount()).append(")*").append(taxAmount4).append(")/")
                 .append(level5.amount().subtract(level4.amount())).append("+").append(taxAmount123).append(";")
 
                 // Level 5
-                .append(IF_TAXABLE_AMOUNT).append(level6.amount()).append(";((").append(TAXABLE_AMOUNT).append("-")
+                .append(ifTaxableAmount).append(level6.amount()).append(";((").append(taxableAmount).append("-")
                 .append(level5.amount()).append(")*").append(taxAmount5).append(")/")
                 .append(level6.amount().subtract(level5.amount())).append("+").append(taxAmount1234).append(";")
 
                 // Level 6
-                .append("(").append(TAXABLE_AMOUNT).append("-").append(level6.amount()).append(")*")
+                .append("(").append(taxableAmount).append("-").append(level6.amount()).append(")*")
                 .append(level6.percentage()).append("+").append(taxAmount12345);
 
         return sb.append("))))))").toString().replace(".", ",");
+    }
+
+    private void validateCellReference(String cellReference, String fieldName) {
+        if (cellReference == null || !CELL_REFERENCE.matcher(cellReference).matches()) {
+            throw new IllegalArgumentException(fieldName + " must be a valid Excel cell reference (e.g. E34).");
+        }
     }
 
 }

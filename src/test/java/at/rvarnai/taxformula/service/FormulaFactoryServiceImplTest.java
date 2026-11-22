@@ -11,6 +11,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.math.BigDecimal;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -41,6 +42,39 @@ class FormulaFactoryServiceImplTest {
         assertThat(formula).endsWith("))))))");
         verify(chargeService).getCharge(Year.CURRENT, Level.LEVEL1);
         verify(chargeService).getCharge(Year.CURRENT, Level.LEVEL6);
+    }
+
+    @Test
+    void usesProvidedCellReferencesInTaxableAmount() {
+        stubCharges(
+                charge(Level.LEVEL1, "10000", "0.10"),
+                charge(Level.LEVEL2, "20000", "0.20"),
+                charge(Level.LEVEL3, "30000", "0.30"),
+                charge(Level.LEVEL4, "40000", "0.40"),
+                charge(Level.LEVEL5, "50000", "0.50"),
+                charge(Level.LEVEL6, "60000", "0.60"));
+        stubTaxAmounts(
+                charge(Level.LEVEL1, "10000", "0.10"),
+                charge(Level.LEVEL2, "20000", "0.20"),
+                charge(Level.LEVEL3, "30000", "0.30"),
+                charge(Level.LEVEL4, "40000", "0.40"),
+                charge(Level.LEVEL5, "50000", "0.50"),
+                charge(Level.LEVEL6, "60000", "0.60"));
+
+        FormulaFactoryServiceImpl service = new FormulaFactoryServiceImpl(chargeService);
+
+        String formula = service.createFormula(Year.CURRENT, "C12", "D7");
+
+        assertThat(formula).contains("(C12-D7)").doesNotContain("(E34-E35)");
+    }
+
+    @Test
+    void rejectsInvalidCellReferences() {
+        FormulaFactoryServiceImpl service = new FormulaFactoryServiceImpl(chargeService);
+
+        assertThatIllegalArgumentException()
+                .isThrownBy(() -> service.createFormula(Year.CURRENT, "E34)+SUM(A1", "E35"))
+                .withMessageContaining("valid Excel cell reference");
     }
 
     private void stubCharges(

@@ -1,4 +1,4 @@
-name: Taxformula CI
+name: Tax Formula CI
 
 on:
   push:

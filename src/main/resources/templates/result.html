@@ -1,19 +1,99 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="https://www.thymeleaf.org">
+
 <head>
-    <title>Excel formula generator for Austrian tax rules</title>
+    <title>Tax Formula</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
+<script>
+    async function copyFormula() {
+        const formula = document.getElementById('excelFormula').textContent;
+        const status = document.getElementById('copyStatus');
+
+        try {
+            await navigator.clipboard.writeText(formula);
+            status.textContent = '✓ Formula copied to clipboard.';
+        } catch (error) {
+            status.textContent = 'Unable to copy formula. Please copy it manually.';
+        }
+
+        setTimeout(() => {
+            status.textContent = '';
+        }, 3000);
+    }
+</script>
+
 <body>
-<h1>Tax levels and Excel formula</h1>
-<span style="font-weight: bold" th:text="'Tax levels ' + ${formula.year}"></span>
-<br>
-<span style="white-space: pre-line" th:text="${formula.taxLevels}"></span>
-<br>
-<span style="font-weight: bold" th:text="'Excel formula ' + ${formula.year}"></span>
-<br>
-<span style="white-space: pre-line" th:text="${formula.excelFormula}"></span>
-<br><br>
-<a href="/formula">Select another year</a>
+    <div class="container">
+        <h1>Tax Formula</h1>
+        <div class="subtitle">
+            Excel formula generator for Austrian tax rules
+        </div>
+
+        <div class="result-card">
+            <span class="result-title"
+                  th:text="'Tax levels ' + ${formula.year}">
+            </span>
+
+            <table class="tax-table">
+                <thead>
+                <tr>
+                    <th>Annual taxable income</th>
+                    <th>Marginal tax rate</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="bracket : ${formula.taxBrackets}">
+                    <td th:text="${bracket.incomeRange}"></td>
+                    <td th:text="${bracket.taxRate}"></td>
+                </tr>
+                </tbody>
+            </table>
+            <p class="table-note">
+                Source:
+                <a href="https://www.bmf.gv.at/themen/steuern/arbeitnehmerveranlagung/steuertarif-steuerabsetzbetraege/steuertarif-steuerabsetzbetraege.html"
+                   target="_blank"
+                   rel="noopener noreferrer">Austrian Federal Ministry of Finance (BMF)</a><span
+                    th:text="' – Income tax tariff ' + ${formula.year} + '.'"></span>
+            </p>
+        </div>
+
+        <div class="result-card">
+            <div class="result-header">
+                <span class="result-title"
+                      th:text="'Excel formula ' + ${formula.year}">
+                </span>
+
+                <button type="button"
+                        class="copy-button"
+                        onclick="copyFormula()">
+                    Copy formula
+                </button>
+            </div>
+
+            <span id="excelFormula"
+                  class="result-content"
+                  th:text="${formula.excelFormula}">
+            </span>
+
+            <span id="copyStatus" class="copy-status"></span>
+        </div>
+
+        <div class="disclaimer">
+            <strong>Disclaimer:</strong>
+            This application provides non-binding estimates for informational purposes only.
+            Results are not official tax assessments or professional tax advice.
+            Always verify calculations against the applicable Austrian tax regulations.
+        </div>
+
+        <div class="navigation">
+            <a href="/formula" class="button">Select another year</a>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

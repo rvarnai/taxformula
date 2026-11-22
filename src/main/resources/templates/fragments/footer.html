@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<body>
+
+<footer th:fragment="footer">
+
+    <div class="footer-content">
+        <div class="footer-brand">
+            <strong>Tax Formula</strong>
+            <span>Excel formula generator for Austrian tax rules</span>
+        </div>
+
+        <div class="footer-links">
+            <a href="https://github.com/rvarnai/taxformula"
+               target="_blank"
+               rel="noopener noreferrer">
+                GitHub Repository
+            </a>
+        </div>
+
+        <div class="footer-copyright">
+            &copy; <span th:text="${#dates.year(#dates.createNow())}"></span>
+            Robert Varnai | Tax Formula
+        </div>
+    </div>
+
+</footer>
+
+</body>
+</html>

@@ -1,18 +1,62 @@
 <!DOCTYPE HTML>
 <html lang="en" xmlns:th="https://www.thymeleaf.org">
+
 <head>
-    <title>Excel formula generator for Austrian tax rules</title>
+    <title>Tax Formula</title>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" th:href="@{/css/style.css}">
 </head>
+
 <body>
-<h1>Select year</h1>
-<form action="#" th:action="@{/formula}" th:object="${formula}" method="post">
-    <p><label for="year">Year:</label>
-        <select id="year" th:field="*{year}">
-            <option th:each="year : ${years}" th:value="${year.value}" th:text="${year.value}"></option>
-        </select>
-    </p>
-    <p><input type="submit" value="Submit" /> <input type="reset" value="Reset" /></p>
-</form>
+    <div class="container">
+        <h1>Tax Formula</h1>
+        <div class="subtitle">
+            Excel formula generator for Austrian tax rules
+        </div>
+
+        <div class="form-card">
+            <h2>Select tax year and source cells</h2>
+
+            <form action="#" th:action="@{/formula}"
+                  th:object="${formula}" method="post">
+
+                <div class="form-group">
+                    <label for="year">Tax year:</label>
+
+                    <select id="year" th:field="*{year}">
+                        <option th:each="year : ${years}"
+                                th:value="${year.value}"
+                                th:text="${year.value}">
+                        </option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="profitBeforeTaxCell">Profit before tax (cell):</label>
+                    <input id="profitBeforeTaxCell" type="text"
+                           th:field="*{profitBeforeTaxCell}"
+                           pattern="[A-Z]{1,3}[1-9]{1,3}"
+                           title="Enter a cell reference, for example E34."
+                           maxlength="6" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="basicTaxFreeAllowanceCell">Basic tax-free allowance (cell):</label>
+                    <input id="basicTaxFreeAllowanceCell" type="text"
+                           th:field="*{basicTaxFreeAllowanceCell}"
+                           pattern="[A-Z]{1,3}[1-9]{1,3}"
+                           title="Enter a cell reference, for example E35."
+                           maxlength="6" required>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="button">Generate formula</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

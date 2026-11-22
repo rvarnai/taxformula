@@ -1,0 +1,335 @@
+/* General layout */
+* {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: Arial, Helvetica, sans-serif;
+    background-color: #f4f6f9;
+    color: #333;
+    margin: 0;
+    padding: 30px 15px;
+}
+
+.container {
+    max-width: 850px;
+    margin: 0 auto;
+}
+
+/* Headings */
+h1 {
+    color: #24476b;
+    margin-bottom: 10px;
+}
+
+.subtitle {
+    color: #777;
+    margin-bottom: 30px;
+}
+
+/* Form card */
+.form-card {
+    background-color: #fff;
+    padding: 30px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.form-card h2 {
+    color: #24476b;
+    font-size: 1.2em;
+    margin-top: 0;
+    margin-bottom: 25px;
+}
+
+/* Form elements */
+.form-group {
+    margin-bottom: 25px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #444;
+}
+
+.form-group select,
+.form-group input {
+    width: 100%;
+    max-width: 300px;
+    padding: 12px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    background-color: #fff;
+    font-size: 1em;
+    color: #333;
+}
+
+.form-group select {
+    cursor: pointer;
+}
+
+.form-group select:focus,
+.form-group input:focus {
+    outline: none;
+    border-color: #315f8c;
+    box-shadow: 0 0 0 2px rgba(49, 95, 140, 0.15);
+}
+
+/* Form buttons */
+.form-actions {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.button {
+    display: inline-block;
+    padding: 11px 20px;
+    background-color: #315f8c;
+    color: white;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    font-size: 0.95em;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.button:hover {
+    background-color: #24476b;
+}
+
+.button-secondary {
+    background-color: #e5e8ec;
+    color: #444;
+}
+
+.button-secondary:hover {
+    background-color: #d2d7dd;
+}
+
+/* Result cards */
+.result-card {
+    background-color: #fff;
+    padding: 25px;
+    margin-bottom: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.result-title {
+    font-size: 1.15em;
+    font-weight: bold;
+    color: #24476b;
+    margin-bottom: 15px;
+    display: block;
+}
+
+.result-content {
+    display: block;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    line-height: 1.6;
+    font-family: Consolas, monospace;
+    font-size: 0.95em;
+}
+
+/* Result card heading and actions */
+.result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    margin-bottom: 15px;
+}
+
+.result-header .result-title {
+    margin-bottom: 0;
+}
+
+/* Tax table */
+.tax-table {
+    width: 100%;
+    max-width: 550px;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background-color: #fff;
+    font-size: 0.95em;
+    table-layout: fixed;
+}
+
+.tax-table th,
+.tax-table td {
+    padding: 12px 15px;
+    text-align: right;
+}
+
+.tax-table th:first-child,
+.tax-table td:first-child {
+    width: 70%;
+}
+
+.tax-table th:last-child,
+.tax-table td:last-child {
+    width: 30%;
+    white-space: nowrap;
+}
+
+.tax-table th {
+    background-color: #315f8c;
+    color: #fff;
+    font-weight: 600;
+}
+
+.tax-table td {
+    border-bottom: 1px solid #e5e8ec;
+}
+
+.tax-table tbody tr:nth-child(even) {
+    background-color: #f4f6f9;
+}
+
+.tax-table tbody tr:hover {
+    background-color: #edf3f8;
+}
+
+/* Official source reference */
+.table-note {
+    color: #777;
+    font-size: 0.85em;
+    margin-top: 12px;
+    line-height: 1.5;
+}
+
+.table-note a {
+    color: #315f8c;
+    text-decoration: none;
+}
+
+.table-note a:hover {
+    text-decoration: underline;
+}
+
+.copy-button {
+    padding: 7px 14px;
+    background-color: #e5e8ec;
+    color: #315f8c;
+    border: 1px solid #ccd3dc;
+    border-radius: 5px;
+    font-size: 0.85em;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+.copy-button:hover {
+    background-color: #d2dce8;
+}
+
+.copy-status {
+    display: block;
+    margin-top: 10px;
+    color: #287a45;
+    font-size: 0.85em;
+}
+
+/* Disclaimer */
+.disclaimer {
+    margin-top: 25px;
+    padding: 15px 20px;
+    background-color: #fff8e6;
+    border-left: 4px solid #e0a52b;
+    border-radius: 4px;
+    color: #665522;
+    font-size: 0.9em;
+    line-height: 1.5;
+}
+
+/* Navigation */
+.navigation {
+    margin-top: 25px;
+}
+
+.button {
+    display: inline-block;
+    padding: 11px 20px;
+    background-color: #315f8c;
+    color: white;
+    text-decoration: none;
+    border-radius: 5px;
+    transition: background-color 0.2s;
+}
+
+.button:hover {
+    background-color: #24476b;
+}
+
+/* Footer */
+footer {
+    margin-top: 50px;
+    padding: 25px 15px;
+    border-top: 1px solid #ddd;
+    color: #777;
+    font-size: 0.85em;
+}
+
+.footer-content {
+    max-width: 850px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.footer-brand {
+    margin-bottom: 12px;
+}
+
+.footer-brand strong {
+    display: block;
+    color: #24476b;
+    font-size: 1.1em;
+    margin-bottom: 4px;
+}
+
+.footer-brand span {
+    color: #888;
+}
+
+.footer-links {
+    margin-bottom: 12px;
+}
+
+.footer-links a {
+    color: #315f8c;
+    text-decoration: none;
+}
+
+.footer-links a:hover {
+    text-decoration: underline;
+}
+
+.footer-copyright {
+    font-size: 0.9em;
+    color: #999;
+}
+
+/* Responsive layout */
+@media (max-width: 600px) {
+    body {
+        padding: 15px 10px;
+    }
+
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .result-card {
+        padding: 18px;
+    }
+
+    .result-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

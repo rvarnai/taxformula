@@ -1,10 +1,8 @@
 package at.rvarnai.taxformula.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
+
+import java.util.List;
 
 @Getter
 @Setter
@@ -14,6 +12,10 @@ import lombok.Setter;
 public class TaxFormula {
 
     private Integer year;
-    private String taxLevels;
+    private List<TaxBracket> taxBrackets;
     private String excelFormula;
+    @Builder.Default
+    private String profitBeforeTaxCell = "E34";
+    @Builder.Default
+    private String basicTaxFreeAllowanceCell = "E35";
 }
