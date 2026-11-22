@@ -1,11 +1,27 @@
 # Tax Formula
 
-Tax Formula generates an Excel formula for Austrian income tax using the configured tax levels for 2025, 2026, or 2027.
+Tax Formula generates Excel formulas for calculating Austrian income tax based on the configured tax brackets for 2025, 2026 and 2027.
+
+## Features
+
+- Automatic generation of Excel formulas for Austrian income tax calculation.
+- Support for tax years 2025, 2026 and 2027.
+- Display of annual income tax brackets and marginal tax rates.
+- Copy generated Excel formulas directly to the clipboard.
+
+## Technology Stack
+
+- Java 25
+- Spring Boot 4
+- Spring MVC
+- Thymeleaf
+- H2 Database (in-memory)
+- Maven
 
 ## Requirements
 
 - Java 25
-- No separate database installation (the app uses an in-memory H2 database)
+- No separate database installation required.
 
 ## Run locally
 
@@ -17,15 +33,22 @@ Open [http://localhost:8080/formula](http://localhost:8080/formula).
 
 ## Verify and package
 
+Run the tests:
 ```sh
 ./mvnw test
+```
+Build the application:
+```sh
 ./mvnw clean package
+```
+Run the packaged application:
+```sh
 java -jar target/taxformula-0.0.1-SNAPSHOT.jar
 ```
 
 ## Error responses
 
-Invalid years and missing resources return an RFC 9457 `application/problem+json` response. A typical not-found response is:
+Invalid years and missing resources return an RFC 9457 `application/problem+json` response. A typical not-found response looks like this:
 
 ```json
 {
@@ -36,6 +59,10 @@ Invalid years and missing resources return an RFC 9457 `application/problem+json
   "instance": "/formula"
 }
 ```
+
+## Official tax information
+
+The tax brackets are based on information published by the Austrian Federal Ministry of Finance (BMF).
 
 ## Disclaimer
 
@@ -50,3 +77,8 @@ Users are responsible for verifying the calculated results against the applicabl
 The author assumes no liability for any direct or indirect damages arising from the use of this application or reliance on its calculated results.
 
 Tax Formula is an independent project and is not affiliated with, endorsed by or officially connected to the Austrian Federal Ministry of Finance or any other government authority.
+
+## License
+
+This project is licensed under the MIT License.
+See the [LICENSE](LICENSE) file for details.
