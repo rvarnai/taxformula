@@ -4,6 +4,12 @@
 
 Tax Formula generates Excel formulas for calculating Austrian income tax based on the configured tax brackets for 2025, 2026 and 2027.
 
+## Live Demo
+
+🚀 Try Tax Formula: [https://taxformula.onrender.com/formula](https://taxformula.onrender.com/formula)
+
+Hosted on Render. The free hosting instance may spin down after inactivity, so the first request can take a little longer.
+
 ## Features
 
 - Automatic generation of Excel formulas for Austrian income tax calculation.
