@@ -1,4 +1,4 @@
-name: Tax Formula CI/CD
+name: Tax Formula CI
 
 on:
   push:
