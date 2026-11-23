@@ -51,15 +51,25 @@ jobs:
           fi
 
           RELEASE_VERSION="${RELEASE_TAG#v}"
-
           RELEASE_BRANCH="release/$RELEASE_VERSION"
 
-          PR_BODY=$(gh pr list \
+          PR_NUMBER=$(gh pr list \
             --state merged \
             --base main \
-            --head "${GITHUB_REPOSITORY_OWNER}:${RELEASE_BRANCH}" \
-            --json body \
-            --jq '.[0].body // empty')
+            --head "$RELEASE_BRANCH" \
+            --json number \
+            --jq '.[0].number // empty')
+
+          if [[ -z "$PR_NUMBER" ]]; then
+            echo "Could not find merged release PR for $RELEASE_BRANCH."
+            exit 1
+          fi
+
+          PR_BODY=$(gh pr view "$PR_NUMBER" --json body --jq '.body')
+
+          echo "Release PR: #$PR_NUMBER"
+          echo "Release PR body:"
+          echo "$PR_BODY"
 
           NEXT_BUMP=$(echo "$PR_BODY" \
             | grep -oP '(?<=<!-- next-version-bump: )(patch|minor|major)(?= -->)' \
