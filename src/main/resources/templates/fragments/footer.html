@@ -20,7 +20,8 @@
 
         <div class="footer-copyright">
             &copy; <span th:text="${#dates.year(#dates.createNow())}"></span>
-            Robert Varnai | Tax Formula
+            Robert Varnai | Tax Formula |
+            <span th:text="${applicationVersion}"></span>
         </div>
     </div>
 
