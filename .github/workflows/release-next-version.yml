@@ -5,6 +5,7 @@ on:
     workflows: ["Tax Formula Release"]
     types:
       - completed
+  workflow_dispatch:
 
 permissions: {}
 
@@ -13,7 +14,9 @@ jobs:
     name: Prepare next development version
     runs-on: ubuntu-latest
 
-    if: github.event.workflow_run.conclusion == 'success'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      github.event.workflow_run.conclusion == 'success'
 
     permissions:
       contents: write
@@ -37,21 +40,45 @@ jobs:
         id: version
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          EVENT_NAME: ${{ github.event_name }}
           RELEASE_SHA: ${{ github.event.workflow_run.head_sha }}
         run: |
-          git fetch --tags origin
+          git fetch origin main --tags
 
-          RELEASE_TAG=$(git tag --points-at "$RELEASE_SHA" \
-            | grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' \
-            | head -n 1)
+          if [[ "$EVENT_NAME" == "workflow_dispatch" ]]; then
+            echo "Manual execution: finding latest stable release on main."
+
+            RELEASE_TAG=""
+
+            while IFS= read -r COMMIT; do
+              CANDIDATE=$(git tag --points-at "$COMMIT" \
+                | grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' \
+                | sort -V \
+                | tail -n 1 || true)
+
+              if [[ -n "$CANDIDATE" ]]; then
+                RELEASE_TAG="$CANDIDATE"
+                break
+              fi
+            done < <(git rev-list --first-parent origin/main)
+
+          else
+            echo "Automatic execution: using triggering release commit."
+
+            RELEASE_TAG=$(git tag --points-at "$RELEASE_SHA" \
+              | grep -E '^v(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)$' \
+              | head -n 1)
+          fi
 
           if [[ -z "$RELEASE_TAG" ]]; then
-            echo "No stable release tag found."
+            echo "::error::No stable release tag found."
             exit 1
           fi
 
           RELEASE_VERSION="${RELEASE_TAG#v}"
           RELEASE_BRANCH="release/$RELEASE_VERSION"
+
+          echo "Detected release: $RELEASE_TAG"
 
           PR_NUMBER=$(gh pr list \
             --state merged \
@@ -61,24 +88,25 @@ jobs:
             --jq '.[0].number // empty')
 
           if [[ -z "$PR_NUMBER" ]]; then
-            echo "Could not find merged release PR for $RELEASE_BRANCH."
+            echo "::error::Could not find merged release PR for $RELEASE_BRANCH."
             exit 1
           fi
+
+          echo "Found release PR: #$PR_NUMBER"
 
           PR_BODY=$(gh pr view "$PR_NUMBER" --json body --jq '.body')
 
-          echo "Release PR: #$PR_NUMBER"
-          echo "Release PR body:"
-          echo "$PR_BODY"
+          echo "Extracting next version increment."
 
-          NEXT_BUMP=$(echo "$PR_BODY" \
-            | grep -oP '(?<=<!-- next-version-bump: )(patch|minor|major)(?= -->)' \
-            | head -n 1)
-
-          if [[ -z "$NEXT_BUMP" ]]; then
-            echo "Could not determine next version increment."
+          if [[ "$PR_BODY" =~ \<!--[[:space:]]*next-version-bump:[[:space:]]*(patch|minor|major)[[:space:]]*--\> ]]; then
+            NEXT_BUMP="${BASH_REMATCH[1]}"
+          else
+            echo "::error::Could not determine next version increment from PR #$PR_NUMBER."
             exit 1
           fi
+
+          echo "Release version: $RELEASE_VERSION"
+          echo "Next version bump: $NEXT_BUMP"
 
           echo "release_version=$RELEASE_VERSION" >> "$GITHUB_OUTPUT"
           echo "next_bump=$NEXT_BUMP" >> "$GITHUB_OUTPUT"
