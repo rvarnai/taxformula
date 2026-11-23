@@ -8,6 +8,7 @@ import at.rvarnai.taxformula.service.ChargeService;
 import at.rvarnai.taxformula.service.FormulaFactoryService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.info.BuildProperties;
 import org.springframework.boot.webmvc.test.autoconfigure.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -33,9 +34,13 @@ class WebApplicationTest {
 	@MockitoBean
 	private FormulaFactoryService formulaFactory;
 
+	@MockitoBean
+	private BuildProperties buildProperties;
+
 	@Test
 	void shouldShowForm() throws Exception {
 		when(chargeService.getYears()).thenReturn(List.of(Year.values()));
+		when(buildProperties.getVersion()).thenReturn("test-version");
 		this.mockMvc
 				.perform(get("/formula"))
 				.andExpect(status().isOk())
@@ -49,11 +54,13 @@ class WebApplicationTest {
 				.andExpect(content().string(org.hamcrest.Matchers.containsString("name=\"basicTaxFreeAllowanceCell\"")))
 				.andExpect(content().string(org.hamcrest.Matchers.containsString("title=\"Enter a cell reference, for example E35.\"")))
 				.andExpect(content().string(org.hamcrest.Matchers.containsString("value=\"E35\"")))
-				.andExpect(content().string(org.hamcrest.Matchers.containsString("GitHub Repository")));
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("GitHub Repository")))
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("test-version")));
 	}
 
 	@Test
 	void shouldSubmitForm() throws Exception {
+		when(buildProperties.getVersion()).thenReturn("test-version");
 		when(chargeService.getChargesByYear(Year.PREVIOUS)).thenReturn(List.of(
 				new Charge(Level.LEVEL6, new BigDecimal("60000"), new BigDecimal("0.60")),
 				new Charge(Level.LEVEL5, new BigDecimal("50000"), new BigDecimal("0.50")),
@@ -78,7 +85,8 @@ class WebApplicationTest {
 				.andExpect(content().string(org.hamcrest.Matchers.containsString("=(C12-D7)")))
 				.andExpect(content().string(org.hamcrest.Matchers.containsString("Copy formula")))
 				.andExpect(content().string(org.hamcrest.Matchers.containsString("Austrian Federal Ministry of Finance (BMF)")))
-				.andExpect(content().string(org.hamcrest.Matchers.containsString("professional tax advice")));
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("professional tax advice")))
+				.andExpect(content().string(org.hamcrest.Matchers.containsString("test-version")));
 		verify(formulaFactory).createFormula(Year.PREVIOUS, "C12", "D7");
 	}
 
